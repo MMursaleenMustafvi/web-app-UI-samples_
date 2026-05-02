@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexAI - Next Gen AI Dashboard | Muhammad Mursaleen Mustafvi</title>
+    <!-- Professional Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
+            --bg-input: #334155;
+            --primary: #8b5cf6; /* Neon Purple */
+            --primary-hover: #7c3aed;
+            --secondary: #3b82f6; /* Neon Blue */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-input); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            transition: 0.3s;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .brand i { color: var(--primary); font-size: 28px; filter: drop-shadow(0 0 10px var(--primary)); }
+
+        .new-chat-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: var(--glow);
+            margin-bottom: 25px;
+        }
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 25px rgba(139, 92, 246, 0.6);
+        }
+
+        .history-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .history-list {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .history-list li {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+        .history-list li:hover, .history-list li.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        /* Developer Credit Card in Sidebar */
+        .dev-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .dev-card h4 { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .dev-card h3 { font-size: 13px; color: var(--primary); margin-bottom: 10px; }
+        .linkedin-link {
+            display: inline-block;
+            background: #0077b5;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .linkedin-link:hover { background: #005f92; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            position: relative;
+        }
+
+        /* Top Header */
+        .header {
+            height: 70px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        .model-selector {
+            background: var(--bg-input);
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .model-selector i.fa-bolt { color: #fbbf24; }
+        
+        .header-actions i {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-left: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .header-actions i:hover { color: var(--text-main); }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            display: flex;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .message.user { flex-direction: row-reverse; }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .user .avatar { background: var(--bg-input); color: var(--text-main); }
+        .ai .avatar { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: var(--glow); }
+
+        .msg-content {
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .user .msg-content {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-top-right-radius: 0;
+        }
+        .ai .msg-content { border-top-left-radius: 0; }
+
+        /* Image Generation Layout inside Chat */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .gen-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .gen-image:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .action-bar i { cursor: pointer; transition: 0.2s; }
+        .action-bar i:hover { color: var(--primary); }
+
+        /* Input Area */
+        .input-container {
+            padding: 20px 40px 40px;
+            background: linear-gradient(to top, var(--bg-dark) 50%, transparent);
+        }
+        .input-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .input-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: var(--glow);
+        }
+
+        .input-box textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 15px;
+            resize: none;
+            outline: none;
+            padding: 10px 0;
+            height: 44px;
+            max-height: 150px;
+            font-family: 'Inter', sans-serif;
+        }
+        .input-box textarea::placeholder { color: var(--text-muted); }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            transition: 0.2s;
+        }
+        .btn-icon:hover { color: var(--text-main); }
+        
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 2px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: scale(1.05); }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -280px; height: 100vh; }
+            .header { padding: 0 20px; }
+            .chat-area { padding: 20px; }
+            .input-container { padding: 20px; }
+            .image-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="#" class="brand">
+            <i class="fas fa-brain"></i> NexAI
+        </a>
+
+        <button class="new-chat-btn">
+            <i class="fas fa-plus"></i> New Chat
+        </button>
+
+        <div class="history-title">Recent Chats</div>
+        <ul class="history-list">
+            <li class="active"><i class="far fa-comment-alt"></i> UI/UX Design Ideas</li>
+            <li><i class="far fa-image"></i> Generate Cyberpunk City</li>
+            <li><i class="fas fa-code"></i> Python Data Script</li>
+            <li><i class="far fa-comment-alt"></i> Marketing Strategy 2026</li>
+            <li><i class="far fa-comment-alt"></i> Email Template for Client</li>
+        </ul>
+
+        <!-- Developer Credit inside Dashboard -->
+        <div class="dev-card">
+            <h4>Dashboard Engineered By</h4>
+            <h3>Muhammad Mursaleen</h3>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 10px;">Full Stack AI Developer</p>
+            <a href="https://www.linkedin.com/in/muhammadmursaleenmustafvi/" target="_blank" class="linkedin-link">
+                <i class="fab fa-linkedin-in"></i> Connect
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation -->
+        <header class="header">
+            <div class="model-selector">
+                NexAI Vision Model (Pro) <i class="fas fa-bolt"></i> <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 5px;"></i>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-share-nodes"></i>
+                <i class="fas fa-cog"></i>
+                <i class="fas fa-bars" style="display: none;" id="menuBtn"></i>
+            </div>
+        </header>
+
+        <!-- Chat History Area -->
+        <div class="chat-area" id="chatArea">
+            
+            <!-- User Prompt -->
+            <div class="message user">
+                <div class="avatar"><i class="far fa-user"></i></div>
+                <div class="msg-content">
+                    Can you design a futuristic, high-end sports car concept and place it in a neon-lit cyberpunk city setting?
+                </div>
+            </div>
+
+            <!-- AI Response (Text + Image Generation) -->
+            <div class="message ai">
+                <div class="avatar"><i class="fas fa-brain"></i></div>
+                <div class="msg-content">
+                    <p>Absolutely! I've generated four concept variations of a high-end futuristic sports car in a neon-lit cyberpunk city setting based on your parameters. Let me know if you want to upscale any of these or tweak the prompt for different details.</p>
+                    
+                    <!-- Dummy Unsplash Images for AI Image Generation feel -->
+                    <div class="image-grid">
+                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80" alt="Cyberpunk Car" class="gen-image">
+                        <img src="https://images.unsplash.com/photo-1618241473950-8b9eb6b5c3ff?w=500&q=80" alt="Cyberpunk Car" class="gen-image">
+                        <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=500&q=80" alt="Cyberpunk Car" class="gen-image">
+                        <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=500&q=80" alt="Cyberpunk Car" class="gen-image">
+                    </div>
+
+                    <div class="action-bar">
+                        <i class="far fa-copy" title="Copy Text"></i>
+                        <i class="fas fa-sync-alt" title="Regenerate"></i>
+                        <i class="far fa-thumbs-up" title="Good response"></i>
+                        <i class="far fa-thumbs-down" title="Bad response"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Prompt -->
+            <div class="message user">
+                <div class="avatar"><i class="far fa-user"></i></div>
+                <div class="msg-content">
+                    Wow, the first one looks incredible. Can you write a short marketing tagline for this car?
+                </div>
+            </div>
+
+            <!-- AI Response (Text Only) -->
+            <div class="message ai">
+                <div class="avatar"><i class="fas fa-brain"></i></div>
+                <div class="msg-content">
+                    <h3 style="color: var(--text-main); margin-bottom: 10px;">"Eclipse V-12: Outrun the Neon, Command the Future."</h3>
+                    <p>Here are a few more options depending on the brand voice:</p>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li><strong>Aggressive:</strong> "Tear through tomorrow. The Eclipse is here."</li>
+                        <li><strong>Luxury:</strong> "Elegance woven with pure velocity."</li>
+                        <li><strong>Mysterious:</strong> "Rule the night. Leave only light trails."</li>
+                    </ul>
+                    <div class="action-bar">
+                        <i class="far fa-copy"></i>
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-box">
+                <button class="btn-icon"><i class="fas fa-paperclip"></i></button>
+                <textarea placeholder="Message NexAI or type /imagine for images..."></textarea>
+                <button class="btn-icon"><i class="fas fa-microphone"></i></button>
+                <button class="btn-submit"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="disclaimer">
+                NexAI can make mistakes. Consider verifying important information. | Developed by Muhammad Mursaleen Mustafvi
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Auto-resize textarea logic
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', function() {
+            this.style.height = '44px';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Mobile Menu logic
+        document.getElementById('menuBtn').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.left = sidebar.style.left === '0px' ? '-280px' : '0px';
+        });
+    </script>
+</body>
+</html>
