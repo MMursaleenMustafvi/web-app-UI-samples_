@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraLuxe - Premium Luxury Lifestyle | Muhammad Mursaleen Mustafvi</title>
+    <!-- Professional Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Luxury Gold & Deep Onyx Theme */
+            --primary: #c5a059; 
+            --primary-hover: #a88542;
+            --dark: #121212;
+            --gray: #f8f9fa;
+            --text: #222222;
+            --light-text: #71717a;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --3d-shadow: 20px 20px 60px #e6e6e6, -20px -20px 60px #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Using a serif font for headings to give a luxury fashion vibe */
+        h1, h2, h3, .logo {
+            font-family: 'Playfair Display', serif;
+        }
+
+        body {
+            background-color: var(--gray);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--dark);
+            color: var(--primary);
+            padding: 10px 5%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .top-bar-links a {
+            color: var(--white);
+            text-decoration: none;
+            margin-left: 25px;
+            transition: 0.3s;
+        }
+        .top-bar-links a:hover { color: var(--primary); }
+
+        /* Premium Glassmorphism Header */
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 20px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .logo span { color: var(--primary); font-style: italic; }
+
+        /* Elegant Search Bar */
+        .search-container {
+            flex: 0 1 45%;
+            display: flex;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 5px;
+            border: 1px solid #eaeaea;
+            transition: 0.3s;
+        }
+        .search-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.1);
+        }
+        .search-container input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            font-size: 13px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        .search-container button {
+            background: var(--dark);
+            color: var(--primary);
+            border: none;
+            padding: 10px 30px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .search-container button:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Action Icons */
+        .actions {
+            display: flex;
+            gap: 35px;
+        }
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            color: var(--dark);
+            text-decoration: none;
+            transition: 0.3s;
+            position: relative;
+        }
+        .action-btn i { font-size: 22px; margin-bottom: 6px; }
+        .action-btn span { font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+        .action-btn:hover { color: var(--primary); transform: translateY(-3px); }
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--primary);
+            color: var(--white);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* Categories Nav */
+        .categories {
+            background: var(--white);
+            padding: 18px 5%;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+        .categories a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: 0.3s;
+            position: relative;
+        }
+        .categories a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: 0.3s;
+        }
+        .categories a:hover::after, .categories a.active::after { width: 100%; }
+        .categories a:hover, .categories a.active { color: var(--primary); }
+
+        /* Hero Section 3D */
+        .hero {
+            margin: 40px 5%;
+            height: 450px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #111 0%, #2a2a2a 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 60px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            right: -150px;
+            top: -150px;
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            color: var(--white);
+            max-width: 600px;
+            perspective: 1000px;
+        }
+        .hero-content h1 {
+            font-size: 56px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            transform: translateZ(50px);
+        }
+        .hero-content h1 span { color: var(--primary); font-style: italic; }
+        .hero-content p {
+            font-size: 15px;
+            color: #ccc;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+            transform: translateZ(30px);
+        }
+        .btn-main {
+            background: var(--primary);
+            color: var(--white);
+            padding: 16px 45px;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 13px;
+            border-radius: 2px;
+            display: inline-block;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
+            transform: translateZ(20px);
+            border: 1px solid var(--primary);
+        }
+        .btn-main:hover {
+            background: transparent;
+            color: var(--primary);
+            transform: translateY(-3px) translateZ(20px);
+        }
+
+        /* Section Title */
+        .section-header {
+            margin: 60px 5% 30px;
+            text-align: center;
+        }
+        .section-header h2 {
+            font-size: 32px;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        /* 3D Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 40px;
+            padding: 0 5% 60px;
+        }
+        
+        .product-card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-12px) rotateX(4deg) rotateY(-2deg);
+            box-shadow: 20px 25px 50px rgba(0,0,0,0.08);
+            border-color: var(--primary);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 2px;
+            margin-bottom: 25px;
+            transition: 0.5s;
+            transform: translateZ(40px);
+        }
+
+        .product-card:hover .product-img {
+            transform: translateZ(60px) scale(1.03);
+        }
+
+        .category-tag {
+            font-size: 10px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .product-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transform: translateZ(25px);
+        }
+        .product-price {
+            font-size: 22px;
+            color: var(--dark);
+            font-weight: 500;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateZ(25px);
+        }
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid var(--dark);
+            color: var(--dark);
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            transform: translateZ(15px);
+        }
+        .product-card:hover .add-to-cart-btn {
+            background: var(--dark);
+            color: var(--primary);
+            border-color: var(--dark);
+        }
+
+        /* MODALS (Profile & Payment) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-box {
+            background: var(--white);
+            border-radius: 4px;
+            width: 90%;
+            max-width: 520px;
+            padding: 40px;
+            position: relative;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            border-top: 4px solid var(--primary);
+        }
+        .modal-overlay.active .modal-box {
+            transform: translateY(0) scale(1);
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px; right: 20px;
+            font-size: 24px;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-modal:hover { color: var(--primary); transform: rotate(90deg); }
+
+        /* Profile Modal */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: var(--dark);
+            border: 2px solid var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            color: var(--primary);
+            margin: 0 auto 20px;
+        }
+        .profile-details { background: var(--gray); padding: 25px; border-radius: 4px; margin-bottom: 25px; border: 1px solid #eaeaea; }
+        .profile-details p { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: var(--light-text); }
+        .profile-details p strong { color: var(--dark); font-weight: 600; }
+
+        /* 3D Premium Black Card Modal */
+        .credit-card-3d {
+            width: 100%;
+            height: 230px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2b2b2b 0%, #111 100%);
+            color: #d4af37; /* Gold text */
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateY(0deg);
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            border: 1px solid #333;
+        }
+        .credit-card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -50%; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+        }
+        .card-chip { width: 55px; height: 40px; background: linear-gradient(135deg, #e4c272, #a88542); border-radius: 6px; margin-bottom: 25px; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+        .card-number { font-size: 24px; letter-spacing: 4px; font-family: 'Courier New', Courier, monospace; margin-bottom: 25px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .card-bottom { display: flex; justify-content: space-between; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+        .card-logo { font-size: 28px; font-style: italic; font-weight: 900; font-family: 'Playfair Display', serif; }
+        
+        .payment-form .input-group { margin-bottom: 20px; }
+        .payment-form label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--light-text); margin-bottom: 8px; font-weight: 600; }
+        .payment-form input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 2px; outline: none; font-family: 'Poppins'; transition: 0.3s; background: var(--gray); }
+        .payment-form input:focus { border-color: var(--dark); background: var(--white); }
+        .row-inputs { display: flex; gap: 20px; }
+
+        /* Premium Footer */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 80px 5% 40px;
+            border-top: 5px solid var(--primary);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+        .footer-col h3 { color: var(--primary); margin-bottom: 25px; font-size: 20px; position: relative; padding-bottom: 12px; }
+        .footer-col h3::after { content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 1px; background: var(--white); opacity: 0.3; }
+        .footer-col a { display: block; color: #999; text-decoration: none; margin-bottom: 12px; transition: 0.3s; font-size: 14px; }
+        .footer-col a:hover { color: var(--primary); padding-left: 8px; }
+        
+        .developer-badge {
+            background: rgba(255,255,255,0.02);
+            padding: 35px;
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .developer-badge::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+        .developer-badge h4 { color: #888; font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 3px; font-family: 'Poppins'; }
+        .developer-badge h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--white); margin-bottom: 8px; }
+        .linkedin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            border: 1px solid #0077b5;
+            color: #0077b5;
+            padding: 12px 30px;
+            margin-top: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 12px;
+            transition: 0.4s;
+        }
+        .linkedin-btn:hover { background: #0077b5; color: var(--white); box-shadow: 0 10px 20px rgba(0, 119, 181, 0.2); }
+        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); color: #666; font-size: 12px; letter-spacing: 1px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { flex-wrap: wrap; gap: 20px; }
+            .search-container { order: 3; flex: 100%; }
+            .hero { padding: 40px 20px; text-align: center; }
+            .hero::before { display: none; }
+            .hero-content h1 { font-size: 40px; }
+            .categories { flex-wrap: wrap; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        <div><i class="fas fa-gem"></i> Complimentary Worldwide Shipping</div>
+        <div class="top-bar-links">
+            <a href="#">Boutiques</a>
+            <a href="#">Concierge</a>
+            <a href="#">En / USD</a>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header>
+        <a href="#" class="logo">Aura<span>Luxe</span></a>
+        
+        <div class="search-container">
+            <input type="text" placeholder="Search for designers, collections...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="actions">
+            <!-- Click to open Profile Modal -->
+            <div class="action-btn" onclick="openModal('profileModal')">
+                <i class="far fa-user"></i>
+                <span>Account</span>
+            </div>
+            <!-- Click to open Payment Modal -->
+            <div class="action-btn" onclick="openModal('paymentModal')">
+                <i class="far fa-credit-card"></i>
+                <span>Checkout</span>
+            </div>
+            <a href="#" class="action-btn">
+                <div style="position: relative;">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="badge">2</span>
+                </div>
+                <span>Bag</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Categories Nav -->
+    <nav class="categories">
+        <a href="#" class="active">New Arrivals</a>
+        <a href="#">Timepieces</a>
+        <a href="#">Fragrances</a>
+        <a href="#">Leather Goods</a>
+        <a href="#">Fine Jewelry</a>
+        <a href="#">Gifts</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover True <span>Elegance</span></h1>
+            <p>Curated luxury items for the elite. Explore our exclusive collection of masterfully crafted timepieces and designer accessories.</p>
+            <a href="#" class="btn-main">Explore Collection</a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <div class="section-header">
+        <h2>The Signature Edit</h2>
+    </div>
+
+    <div class="product-grid">
+        <!-- Product 1 -->
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=500&q=80" alt="Luxury Watch" class="product-img">
+            <div class="category-tag">Timepieces</div>
+            <h3 class="product-title">Oyster Perpetual Submariner Date</h3>
+            <div class="product-price">$14,500</div>
+            <button class="add-to-cart-btn">Add to Bag</button>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500&q=80" alt="Perfume" class="product-img">
+            <div class="category-tag">Fragrances</div>
+            <h3 class="product-title">Bleu De Chanel Eau De Parfum</h3>
+            <div class="product-price">$195</div>
+            <button class="add-to-cart-btn">Add to Bag</button>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80" alt="Leather Bag" class="product-img">
+            <div class="category-tag">Leather Goods</div>
+            <h3 class="product-title">Saffiano Leather Briefcase</h3>
+            <div class="product-price">$2,850</div>
+            <button class="add-to-cart-btn">Add to Bag</button>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500&q=80" alt="Sunglasses" class="product-img">
+            <div class="category-tag">Eyewear</div>
+            <h3 class="product-title">Tom Ford Aviator Sunglasses</h3>
+            <div class="product-price">$495</div>
+            <button class="add-to-cart-btn">Add to Bag</button>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-box">
+            <i class="fas fa-times close-modal" onclick="closeModal('profileModal')"></i>
+            <div class="profile-header">
+                <div class="profile-avatar"><i class="far fa-user"></i></div>
+                <h2 style="color: var(--dark); font-family: 'Playfair Display', serif;">My Profile</h2>
+                <p style="color: var(--primary); font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">VIP Member</p>
+            </div>
+            <div class="profile-details">
+                <p><strong>Email:</strong> vip.client@auraluxe.com</p>
+                <p><strong>Concierge Pin:</strong> #AURA-8821</p>
+                <p><strong>Lifetime Orders:</strong> 8</p>
+                <p><strong>Store Credit:</strong> $1,250.00</p>
+            </div>
+            <button class="btn-main" style="width: 100%; text-align: center;">Manage Account</button>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL (3D CARD) -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-box">
+            <i class="fas fa-times close-modal" onclick="closeModal('paymentModal')"></i>
+            <h2 style="margin-bottom: 30px; color: var(--dark); font-family: 'Playfair Display', serif;">Secure Checkout</h2>
+            
+            <!-- 3D Black Centurion Card -->
+            <div class="credit-card-3d" id="card3d">
+                <div class="card-chip"></div>
+                <div class="card-number">3712  8512  3412  3456</div>
+                <div class="card-bottom">
+                    <div>
+                        <div style="font-size: 8px; color: #888;">CARD HOLDER</div>
+                        <div style="font-size: 14px; font-weight: 600; font-family: 'Poppins';">ALEXANDER PIERCE</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 8px; color: #888;">EXPIRES</div>
+                        <div style="font-size: 14px; font-weight: 600; font-family: 'Poppins';">12/28</div>
+                    </div>
+                    <div class="card-logo">AURA</div>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="payment-form">
+                <div class="input-group">
+                    <label>Card Number</label>
+                    <input type="text" placeholder="0000 0000 0000 0000">
+                </div>
+                <div class="row-inputs">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Expiry Date</label>
+                        <input type="text" placeholder="MM/YY">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Security Code (CVV)</label>
+                        <!-- Rotate card 3D on hover/focus of CVV -->
+                        <input type="password" placeholder="***" onfocus="document.getElementById('card3d').style.transform='perspective(1000px) rotateY(18deg) rotateX(8deg) scale(1.02)';" onblur="document.getElementById('card3d').style.transform='perspective(1000px) rotateY(0deg)';">
+                    </div>
+                </div>
+                <button class="btn-main" style="width: 100%; text-align: center; margin-top: 10px;">Authorize $14,695.00</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Client Services</h3>
+                <a href="#">Contact Concierge</a>
+                <a href="#">FAQ & Ordering</a>
+                <a href="#">Shipping & Returns</a>
+                <a href="#">Track Your Order</a>
+            </div>
+            <div class="footer-col">
+                <h3>The House of Aura</h3>
+                <a href="#">Our Heritage</a>
+                <a href="#">Sustainability</a>
+                <a href="#">Careers</a>
+                <a href="#">Legal Notice</a>
+            </div>
+            <div class="footer-col">
+                <h3>Accepted Payments</h3>
+                <div style="display: flex; gap: 15px; font-size: 28px; color: #555; margin-top: 15px;">
+                    <i class="fab fa-cc-amex" style="color: #999;"></i>
+                    <i class="fab fa-cc-visa" style="color: #999;"></i>
+                    <i class="fab fa-cc-mastercard" style="color: #999;"></i>
+                    <i class="fab fa-apple-pay" style="color: #999;"></i>
+                </div>
+            </div>
+            
+            <!-- Developer Identity Section -->
+            <div class="footer-col" style="grid-column: 1 / -1; margin-top: 30px;">
+                <div class="developer-badge">
+                    <h4>Excellence Engineered By</h4>
+                    <h2>Muhammad Mursaleen Mustafvi</h2>
+                    <p style="color: #aaa; font-size: 13px; letter-spacing: 1px; margin-bottom: 10px;">Full Stack Web Developer & UI/UX Specialist</p>
+                    <a href="https://www.linkedin.com/in/muhammadmursaleenmustafvi/" target="_blank" class="linkedin-btn">
+                        <i class="fab fa-linkedin-in" style="font-size: 16px;"></i> Connect on LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2026 AuraLuxe Portfolio. Crafted with precision.</p>
+    </footer>
+
+    <!-- Simple JavaScript for Modals -->
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = 'auto'; 
+        }
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>
