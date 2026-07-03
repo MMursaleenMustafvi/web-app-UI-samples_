@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultmark — Marketplace Platform Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#241B2F;
+  --ink-soft:#2F2440;
+  --ink-softer:#3B2E51;
+  --paper:#F5F1E6;
+  --paper-dim:#E9E0CC;
+  --card:#FFFFFF;
+  --gold:#B98B4E;
+  --gold-deep:#8F6A32;
+  --gold-soft:#E7D3A6;
+  --teal:#5C8265;
+  --teal-soft:#DEE9DC;
+  --coral:#B14B3B;
+  --coral-soft:#F0DAD0;
+  --slate:#675E78;
+  --line: rgba(36,27,47,0.11);
+  --line-soft: rgba(36,27,47,0.06);
+  --white:#FFFFFF;
+  --radius: 10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Fraunces',serif;letter-spacing:-0.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+::selection{background:var(--gold-soft);}
+
+/* ---------- APP SHELL ---------- */
+#app{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+@media (max-width:860px){#app{grid-template-columns:1fr;}#sidebar{position:fixed;z-index:40;top:0;left:0;bottom:0;transform:translateX(-100%);transition:transform .25s ease;}#sidebar.open{transform:translateX(0);}}
+
+#sidebar{
+  background:var(--ink);
+  color:#EDEAE0;
+  display:flex;
+  flex-direction:column;
+  padding:22px 16px;
+  gap:22px;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px;}
+.brand-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(155deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:#fff;}
+.brand-sub{font-size:10.5px;color:#8B8F9C;letter-spacing:.06em;text-transform:uppercase;margin-top:-2px;}
+
+.role-switch{display:flex;background:var(--ink-soft);border-radius:8px;padding:3px;gap:2px;}
+.role-switch button{flex:1;border:0;background:transparent;color:#9195A2;font-size:11.5px;font-weight:600;padding:7px 4px;border-radius:6px;transition:all .15s;}
+.role-switch button.active{background:var(--gold);color:var(--ink);}
+
+nav.navlist{display:flex;flex-direction:column;gap:2px;margin-top:4px;}
+.navlink{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:8px;border:0;background:transparent;color:#C6C9D2;font-size:13.5px;font-weight:500;text-align:left;width:100%;transition:background .12s,color .12s;}
+.navlink:hover{background:var(--ink-soft);color:#fff;}
+.navlink.active{background:var(--ink-softer);color:#fff;box-shadow:inset 2px 0 0 var(--gold);}
+.navlink svg{flex-shrink:0;opacity:.85;}
+.navlink .badge{margin-left:auto;background:var(--coral);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;}
+
+.side-footer{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;display:flex;gap:10px;align-items:center;}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--gold-soft);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.side-footer .name{font-size:12.5px;font-weight:600;color:#fff;}
+.side-footer .role{font-size:10.5px;color:#8B8F9C;text-transform:capitalize;}
+
+/* ---------- MAIN ---------- */
+#main{display:flex;flex-direction:column;min-width:0;}
+#topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 26px;border-bottom:1px solid var(--line);
+  background:var(--paper);position:sticky;top:0;z-index:20;
+}
+#menuToggle{display:none;border:0;background:transparent;padding:4px;}
+@media (max-width:860px){#menuToggle{display:block;}}
+.searchbar{flex:1;max-width:440px;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 12px;}
+.searchbar input{border:0;outline:0;flex:1;font-size:13.5px;background:transparent;color:var(--ink);}
+.searchbar svg{opacity:.5;flex-shrink:0;}
+.topbar-spacer{flex:1;}
+.icon-btn{position:relative;border:1px solid var(--line);background:var(--card);border-radius:9px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;}
+.icon-btn .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--coral);border:2px solid var(--paper);}
+.wallet-chip{display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:9px;padding:7px 12px;font-size:13px;}
+.wallet-chip .amt{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--gold-soft);}
+
+#content{padding:26px 30px 60px;max-width:1180px;width:100%;margin:0 auto;}
+
+/* ---------- GENERIC ---------- */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+.page-head h1{font-size:26px;margin:0 0 4px;font-weight:600;}
+.page-head p{margin:0;color:var(--slate);font-size:13.5px;}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:8px;padding:9px 15px;font-size:13.5px;font-weight:600;transition:all .12s;white-space:nowrap;}
+.btn-primary{background:var(--ink);color:#fff;}
+.btn-primary:hover{background:var(--ink-soft);}
+.btn-gold{background:var(--gold);color:var(--ink);}
+.btn-gold:hover{background:var(--gold-deep);color:#fff;}
+.btn-outline{background:transparent;border-color:var(--line);color:var(--ink);}
+.btn-outline:hover{background:var(--paper-dim);}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-coral{background:var(--coral);color:#fff;}
+.btn-ghost{background:transparent;color:var(--slate);border-color:transparent;padding:8px 10px;}
+.btn-ghost:hover{background:var(--paper-dim);color:var(--ink);}
+.btn-sm{padding:6px 11px;font-size:12.5px;}
+.btn[disabled]{opacity:.45;cursor:not-allowed;}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.02em;}
+.pill-active{background:var(--teal-soft);color:var(--teal);}
+.pill-draft{background:var(--paper-dim);color:var(--slate);}
+.pill-pending{background:var(--gold-soft);color:var(--gold-deep);}
+.pill-danger{background:var(--coral-soft);color:var(--coral);}
+.pill-info{background:#DCE6F3;color:#2D5A97;}
+
+.empty{text-align:center;padding:60px 20px;color:var(--slate);}
+.empty h3{font-size:16px;margin:14px 0 6px;color:var(--ink);}
+.empty p{font-size:13px;margin:0 0 16px;}
+
+/* ---------- GRID / PRODUCT CARDS ---------- */
+.filter-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;color:var(--slate);}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.select-sm{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--ink);}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+.pcard{overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s,transform .15s;}
+.pcard:hover{box-shadow:0 8px 22px rgba(36,27,47,.10);transform:translateY(-2px);}
+.pimg{height:140px;position:relative;cursor:pointer;overflow:hidden;background:var(--paper-dim);}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease;}
+.pcard:hover .pimg img{transform:scale(1.05);}
+.pimg .fav{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;border:0;z-index:2;}
+.pimg .fav svg{stroke:var(--ink);}
+.pimg .fav.faved svg{fill:var(--coral);stroke:var(--coral);}
+.pbody{padding:12px 13px 14px;display:flex;flex-direction:column;gap:5px;flex:1;}
+.pbody .cat{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--gold-deep);font-weight:700;}
+.pbody .title{font-size:14px;font-weight:600;cursor:pointer;line-height:1.3;}
+.pbody .title:hover{text-decoration:underline;}
+.pbody .meta{font-size:12px;color:var(--slate);}
+.pbody .bottom{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:6px;}
+.pbody .price{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;}
+
+/* ---------- PRODUCT DETAIL ---------- */
+.pd-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;}
+@media (max-width:760px){.pd-wrap{grid-template-columns:1fr;}}
+.pd-hero{height:340px;border-radius:14px;position:relative;overflow:hidden;background:var(--paper-dim);}
+.pd-hero img{width:100%;height:100%;object-fit:cover;display:block;}
+.pd-thumbs{display:flex;gap:8px;margin-top:10px;}
+.pd-thumbs div{width:54px;height:54px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:var(--paper-dim);}
+.pd-thumbs div img{width:100%;height:100%;object-fit:cover;display:block;}
+.pd-thumbs div.active{border-color:var(--gold);}
+.seller-row{display:flex;align-items:center;gap:10px;margin:16px 0;padding:12px;border:1px solid var(--line);border-radius:10px;}
+.seller-row .info{flex:1;}
+.seller-row .sname{font-weight:600;font-size:13.5px;}
+.seller-row .srating{font-size:12px;color:var(--slate);display:flex;align-items:center;gap:4px;}
+.pd-price-row{display:flex;align-items:baseline;gap:10px;margin:6px 0 14px;}
+.pd-price-row .price{font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;}
+.pd-actions{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap;}
+.trust-strip{display:flex;gap:18px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line);flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--slate);}
+.trust-item svg{color:var(--teal);flex-shrink:0;}
+
+/* ---------- VAULT / ESCROW SIGNATURE ---------- */
+.vault{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--ink) 0%, var(--ink-soft) 100%);color:#fff;padding:22px 24px;position:relative;overflow:hidden;}
+.vault-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin:0 0 3px;color:#fff;}
+.vault-sub{font-size:12px;color:#9195A2;margin:0 0 18px;}
+.vault-track{display:flex;align-items:center;gap:0;position:relative;}
+.vault-node{display:flex;flex-direction:column;align-items:center;gap:8px;width:84px;flex-shrink:0;}
+.vault-node .circ{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--ink-softer);border:1.5px solid rgba(255,255,255,.15);}
+.vault-node.done .circ{background:var(--teal);border-color:var(--teal);}
+.vault-node.current .circ{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 5px rgba(201,151,61,.22);}
+.vault-node .lbl{font-size:11px;color:#C6C9D2;text-align:center;font-weight:600;}
+.vault-node .amt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold-soft);}
+.vault-line{flex:1;height:2px;background:rgba(255,255,255,.14);position:relative;top:-19px;margin:0 -4px;}
+.vault-line.filled{background:var(--teal);}
+
+/* ---------- FORMS ---------- */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--ink);}
+.field .hint{font-size:11px;color:var(--slate);margin-top:4px;}
+input[type=text],input[type=number],input[type=email],input[type=password],textarea,select{
+  width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;font-family:'Inter',sans-serif;background:var(--card);color:var(--ink);outline:0;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,61,.15);}
+textarea{resize:vertical;min-height:80px;}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.upload-box{border:1.5px dashed var(--line);border-radius:10px;padding:26px;text-align:center;color:var(--slate);font-size:12.5px;}
+.upload-box svg{margin-bottom:6px;opacity:.5;}
+
+/* ---------- TABLE ---------- */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--slate);padding:9px 12px;border-bottom:1px solid var(--line);font-weight:700;}
+td{padding:11px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle;}
+tr:last-child td{border-bottom:0;}
+.tbl-wrap{overflow-x:auto;}
+
+/* ---------- TABS ---------- */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap;}
+.tab{border:0;background:transparent;padding:10px 14px;font-size:13px;font-weight:600;color:var(--slate);border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:var(--ink);border-color:var(--gold);}
+
+/* ---------- MESSAGING ---------- */
+.msg-wrap{display:grid;grid-template-columns:270px 1fr;height:560px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);}
+@media (max-width:760px){.msg-wrap{grid-template-columns:1fr;height:auto;}}
+.conv-list{border-right:1px solid var(--line);overflow-y:auto;}
+.conv-item{display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line-soft);cursor:pointer;}
+.conv-item:hover,.conv-item.active{background:var(--paper-dim);}
+.conv-item .cname{font-size:13px;font-weight:600;}
+.conv-item .cprod{font-size:11.5px;color:var(--slate);}
+.conv-item .clast{font-size:11.5px;color:var(--slate);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chat-col{display:flex;flex-direction:column;}
+.chat-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.bubble{max-width:70%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.4;}
+.bubble.me{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px;}
+.bubble.them{align-self:flex-start;background:var(--paper-dim);color:var(--ink);border-bottom-left-radius:4px;}
+.bubble .t{display:block;font-size:10px;opacity:.6;margin-top:3px;}
+.chat-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);}
+.chat-input input{flex:1;}
+
+/* ---------- MODAL ---------- */
+.modal-overlay{position:fixed;inset:0;background:rgba(36,27,47,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal{background:var(--card);border-radius:14px;max-width:460px;width:100%;padding:24px;max-height:88vh;overflow-y:auto;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-head h3{margin:0;font-size:17px;}
+.modal-close{border:0;background:transparent;padding:4px;color:var(--slate);}
+
+/* ---------- TOAST ---------- */
+#toast-wrap{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--ink);color:#fff;padding:12px 16px;border-radius:9px;font-size:13px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 22px rgba(0,0,0,.25);animation:toastin .2s ease;}
+.toast svg{color:var(--gold-soft);flex-shrink:0;}
+@keyframes toastin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- MISC ---------- */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{padding:16px 18px;}
+.stat-card .lbl{font-size:11.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+.stat-card .val{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;}
+.stat-card .sub{font-size:11.5px;color:var(--slate);margin-top:3px;}
+.section-title{font-size:15px;font-weight:600;margin:0 0 4px;}
+.divider{height:1px;background:var(--line);margin:22px 0;}
+.star-row{display:flex;gap:3px;}
+.star-row svg{cursor:pointer;}
+.list-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-soft);}
+.list-row:last-child{border-bottom:0;}
+.list-row .grow{flex:1;min-width:0;}
+.list-row .ttl{font-size:13.5px;font-weight:600;}
+.list-row .sub{font-size:12px;color:var(--slate);margin-top:2px;}
+.timeline{border-left:2px solid var(--line);padding-left:16px;margin-left:6px;}
+.timeline .tstep{position:relative;padding-bottom:16px;}
+.timeline .tstep:last-child{padding-bottom:0;}
+.timeline .tstep::before{content:'';position:absolute;left:-21px;top:2px;width:9px;height:9px;border-radius:50%;background:var(--line);}
+.timeline .tstep.done::before{background:var(--teal);}
+.timeline .tstep .tt{font-size:13px;font-weight:600;}
+.timeline .tstep .td{font-size:11.5px;color:var(--slate);}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar"></aside>
+  <div id="main">
+    <div id="topbar"></div>
+    <div id="content"></div>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toast-wrap"></div>
+
+<script>
+/* =========================================================
+   ICONS — minimal hand-built feather-style icon set
+========================================================= */
+function ic(name,size){
+  size=size||18;
+  const s='width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  const paths={
+    search:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+    wallet:'<path d="M20 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Z"/><path d="M16 7V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><circle cx="16" cy="13" r="1.4"/>',
+    box:'<path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+    chat:'<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1L3 20l1-4.5A8.5 8.5 0 1 1 21 11.5Z"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+    shield:'<path d="M12 3 4 6v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>',
+    plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    star:'<polygon points="12 2 15.1 8.6 22 9.3 17 14.1 18.4 21 12 17.6 5.6 21 7 14.1 2 9.3 8.9 8.6"/>',
+    check:'<polyline points="20 6 9 17 4 12"/>',
+    x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>',
+    truck:'<rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7z"/><circle cx="6" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/>',
+    lock:'<rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"/>',
+    edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+    trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    arrow:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+    filter:'<polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/>',
+    upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+    alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    gavel:'<path d="m14 13-7.5 7.5a1.7 1.7 0 0 1-2.4-2.4L11.5 10.6"/><path d="m16 16 6-6"/><path d="m8 8 6-6 5 5-6 6Z"/>',
+    tag:'<path d="M20.6 12.3 12.7 20.2a2 2 0 0 1-2.8 0l-6.1-6.1a2 2 0 0 1 0-2.8L11.7 3.4 20.6 3.4 20.6 12.3z"/><circle cx="16" cy="8" r="1.2"/>',
+    settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9c.2.6.7 1 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
+    menu:'<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+    chevdown:'<polyline points="6 9 12 15 18 9"/>',
+    logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+    image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+    info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
+  };
+  return '<svg '+s+'>'+(paths[name]||'')+'</svg>';
+}
+
+/* =========================================================
+   SEED DATA
+========================================================= */
+const CURRENT_USER = {id:'u1',name:'Alex Rivera',initials:'AR',rating:4.8,walletBalance:342.50,pending:128.00};
+
+function photo(seed){return 'https://picsum.photos/seed/'+seed+'/600/450';}
+
+let products = [
+ {id:1,title:'Vintage Leica M6 Camera',price:1850,category:'Electronics',condition:'Used - Excellent',sellerId:'u2',seller:'Marcus Chen',rating:4.9,img:photo('vaultmark-leica-m6'),bg:'#EAE2D2',desc:'A beautifully preserved Leica M6 rangefinder, fully serviced by a certified technician. Includes original 50mm f/2 Summicron lens, leather case and strap. Light seals replaced in 2025.',stock:1,status:'active',favorites:12,faved:false},
+ {id:2,title:'Herman Miller Aeron Chair',price:620,category:'Home & Living',condition:'Used - Good',sellerId:'u3',seller:'Priya Nair',rating:4.7,img:photo('vaultmark-aeron-chair'),bg:'#E5E0D0',desc:'Size B Aeron in graphite frame with PostureFit SL. Fully adjustable tilt and lumbar support. Minor wear on right armrest, otherwise excellent working order.',stock:2,status:'active',favorites:31,faved:false},
+ {id:3,title:'First Edition "Dune" (1965)',price:4200,category:'Collectibles',condition:'Used - Very Good',sellerId:'u2',seller:'Marcus Chen',rating:4.9,img:photo('vaultmark-rare-books'),bg:'#EFE1D6',desc:'True first edition, first printing of Frank Herbert\'s Dune, Chilton Books 1965. Original dust jacket present with light shelf wear. Comes with authentication letter.',stock:1,status:'active',favorites:58,faved:true},
+ {id:4,title:'Rapha Pro Team Jersey',price:95,category:'Fashion',condition:'New',sellerId:'u4',seller:'Jordan Blake',rating:4.6,img:photo('vaultmark-cycling-jersey'),bg:'#E1E4EC',desc:'Size M, brand new with tags, never worn. Aero-fit race jersey with full-length zip and three rear pockets.',stock:4,status:'active',favorites:9,faved:false},
+ {id:5,title:'Handwoven Moroccan Rug',price:340,category:'Home & Living',condition:'New',sellerId:'u3',seller:'Priya Nair',rating:4.7,img:photo('vaultmark-moroccan-rug'),bg:'#F0E4D4',desc:'6x9 ft hand-knotted wool rug from the Atlas mountains, natural vegetable dyes, one-of-a-kind pattern.',stock:1,status:'active',favorites:22,faved:false},
+ {id:6,title:'Nintendo Game Boy Color (1998)',price:78,category:'Collectibles',condition:'Used - Good',sellerId:'u4',seller:'Jordan Blake',rating:4.6,img:photo('vaultmark-retro-console'),bg:'#E6E0EC',desc:'Grape colour, tested and fully working, new battery contacts. Includes two cartridges: Tetris and Pokémon Silver.',stock:1,status:'active',favorites:15,faved:false},
+ {id:7,title:'Patagonia Retro-X Fleece',price:110,category:'Fashion',condition:'Used - Excellent',sellerId:'u5',seller:'Sofia Reyes',rating:4.8,img:photo('vaultmark-fleece-jacket'),bg:'#E1E4EC',desc:'Size L, deep sea blue. Worn a handful of times, smoke-free pet-free home.',stock:1,status:'draft',favorites:4,faved:false},
+ {id:8,title:'Mechanical Keyboard (Topre)',price:245,category:'Electronics',condition:'Used - Excellent',sellerId:'u5',seller:'Sofia Reyes',rating:4.8,img:photo('vaultmark-mech-keyboard'),bg:'#EAE2D2',desc:'HHKB Professional Hybrid Type-S. Includes original box, keycap puller and USB-C cable.',stock:1,status:'active',favorites:27,faved:false},
+ {id:9,title:'Sony A7III Camera Body',price:1290,category:'Electronics',condition:'Used - Excellent',sellerId:'u1',seller:'Alex Rivera',rating:4.8,img:photo('vaultmark-sony-a7iii'),bg:'#EAE2D2',desc:'Shutter count under 8,000. Includes two batteries, charger and original box. No sensor dust, always used with UV filter.',stock:1,status:'active',favorites:19,faved:false},
+ {id:10,title:'Mid-Century Walnut Desk',price:410,category:'Home & Living',condition:'Used - Good',sellerId:'u1',seller:'Alex Rivera',rating:4.8,img:photo('vaultmark-walnut-desk'),bg:'#E5E0D0',desc:'Danish-style walnut desk, 120x60cm, tapered legs. Minor surface scratches consistent with age, structurally solid.',stock:1,status:'draft',favorites:7,faved:false}
+];
+
+let offers = [
+ {id:1,productId:1,buyer:'Alex Rivera',buyerId:'u1',seller:'Marcus Chen',sellerId:'u2',listPrice:1850,amount:1700,status:'pending',time:'2 hours ago'},
+ {id:2,productId:9,buyer:'Priya Nair',buyerId:'u3',seller:'Alex Rivera',sellerId:'u1',listPrice:1290,amount:1150,status:'pending',time:'5 hours ago'},
+ {id:3,productId:6,buyer:'Alex Rivera',buyerId:'u1',seller:'Jordan Blake',sellerId:'u4',listPrice:78,amount:65,status:'accepted',time:'1 day ago'}
+];
+
+let conversations = [
+ {id:1,withName:'Marcus Chen',withInitials:'MC',productId:1,productTitle:'Vintage Leica M6 Camera',
+  messages:[
+    {from:'them',text:'Hi! Thanks for your offer on the Leica. It\'s in genuinely excellent shape.',time:'10:02 AM'},
+    {from:'me',text:'Great to hear — does it come with the original box?',time:'10:05 AM'},
+    {from:'them',text:'No original box unfortunately, but I can include a padded case at no extra cost.',time:'10:11 AM'}
+  ]},
+ {id:2,withName:'Priya Nair',withInitials:'PN',productId:9,productTitle:'Sony A7III Camera Body',
+  messages:[
+    {from:'them',text:'Hi Alex, is the shutter count really under 8k? Would love to see a screenshot if possible.',time:'Yesterday'},
+    {from:'me',text:'Yep, I\'ll send a shutter-count app screenshot shortly.',time:'Yesterday'}
+  ]}
+];
+
+let orders = [
+ {id:'ORD-1042',productId:2,title:'Herman Miller Aeron Chair',buyer:'Alex Rivera',buyerId:'u1',seller:'Priya Nair',sellerId:'u3',amount:620,commission:31,status:'escrow_held',tracking:null,created:'Jun 28, 2026',role:'buyer'},
+ {id:'ORD-1038',productId:9,title:'Sony A7III Camera Body',buyer:'Priya Nair',buyerId:'u3',seller:'Alex Rivera',sellerId:'u1',amount:1150,commission:57.5,status:'shipped',tracking:'1Z999AA10123456784',created:'Jun 24, 2026',role:'seller'},
+ {id:'ORD-1029',productId:6,title:'Nintendo Game Boy Color (1998)',buyer:'Alex Rivera',buyerId:'u1',seller:'Jordan Blake',sellerId:'u4',amount:65,commission:3.25,status:'completed',tracking:'9400111899223197428',created:'Jun 15, 2026',role:'buyer',reviewed:false}
+];
+
+let disputes = [
+ {orderId:'ORD-1015',product:'Handwoven Moroccan Rug',buyer:'Sofia Reyes',seller:'Priya Nair',amount:340,reason:'Item not as described — colour differs significantly from listing photos.',status:'open',opened:'Jun 30, 2026'}
+];
+
+let notifications = [
+ {id:1,icon:'wallet',text:'Funds released: $61.75 from order ORD-1029',time:'2h ago',read:false},
+ {id:2,icon:'tag',text:'New offer received: $1,150 for Sony A7III Camera Body',time:'5h ago',read:false},
+ {id:3,icon:'chat',text:'Marcus Chen sent you a message about Vintage Leica M6 Camera',time:'1d ago',read:false},
+ {id:4,icon:'truck',text:'Your order ORD-1038 has shipped',time:'2d ago',read:true},
+ {id:5,icon:'shield',text:'Identity verification approved',time:'4d ago',read:true}
+];
+
+let payoutHistory = [
+ {id:'PO-338',amount:210.00,date:'Jun 20, 2026',status:'Paid'},
+ {id:'PO-321',amount:96.50,date:'Jun 5, 2026',status:'Paid'}
+];
+
+let adminUsers = [
+ {id:'u1',name:'Alex Rivera',email:'alex.rivera@mail.com',role:'Buyer & Seller',status:'active',joined:'Mar 2025',verified:true},
+ {id:'u2',name:'Marcus Chen',email:'marcus.chen@mail.com',role:'Seller',status:'active',joined:'Jan 2025',verified:true},
+ {id:'u3',name:'Priya Nair',email:'priya.nair@mail.com',role:'Seller',status:'active',joined:'Feb 2025',verified:true},
+ {id:'u4',name:'Jordan Blake',email:'jordan.blake@mail.com',role:'Buyer & Seller',status:'active',joined:'Apr 2025',verified:false},
+ {id:'u5',name:'Sofia Reyes',email:'sofia.reyes@mail.com',role:'Seller',status:'suspended',joined:'May 2025',verified:true}
+];
+
+let coupons = [
+ {code:'WELCOME10',type:'10% off',uses:184,active:true},
+ {code:'FREESHIP',type:'Free shipping',uses:412,active:true}
+];
+
+let reviews = [];
+let commissionRate = 5;
+let flaggedListings = [{id:7,title:'Patagonia Retro-X Fleece',reason:'Suspected duplicate listing',reportedBy:2}];
+
+/* =========================================================
+   APP STATE
+========================================================= */
+const state = {
+  role:'buyer',          // buyer | seller | admin  (perspective toggle for the demo)
+  view:'browse',
+  search:'',
+  category:'All',
+  sort:'relevance',
+  activeConv:1,
+  adminTab:'users',
+  selectedProductId:null,
+  activePimg:0,
+  modal:null,
+  draftListing:null
+};
+
+function idxr(id){return products.find(p=>p.id===id);}
+function fmt(n){return '$'+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+function toast(msg,icon){
+  icon = icon||'check';
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className='toast';
+  el.innerHTML = ic(icon,16)+'<span>'+esc(msg)+'</span>';
+  wrap.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .25s';setTimeout(()=>el.remove(),250);},2600);
+}
+
+function setRole(r){
+  state.role=r;
+  state.view = r==='admin' ? 'admin' : 'browse';
+  render();
+}
+function setView(v,arg){
+  state.view=v;
+  if(v==='product'){state.selectedProductId=arg;state.activePimg=0;}
+  if(v==='messages' && arg){state.activeConv=arg;}
+  if(v==='admin' && arg){state.adminTab=arg;}
+  window.scrollTo(0,0);
+  render();
+}
+function closeModal(){state.modal=null;renderModal();}
+function openModal(m){state.modal=m;renderModal();}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+function toggleFavorite(id,ev){
+  if(ev) ev.stopPropagation();
+  const p=idxr(id); p.faved=!p.faved; p.favorites += p.faved?1:-1;
+  toast(p.faved?'Added to favourites':'Removed from favourites','heart');
+  render();
+}
+
+function submitOffer(productId,amount){
+  const p=idxr(productId);
+  if(!amount || amount<=0){toast('Enter a valid offer amount','alert');return;}
+  offers.unshift({id:Date.now(),productId:productId,buyer:CURRENT_USER.name,buyerId:'u1',seller:p.seller,sellerId:p.sellerId,listPrice:p.price,amount:Number(amount),status:'pending',time:'Just now'});
+  closeModal();
+  toast('Offer of '+fmt(amount)+' sent to '+p.seller,'tag');
+  setView('offers');
+}
+function acceptOffer(id){
+  const o=offers.find(x=>x.id===id); o.status='accepted';
+  toast('Offer accepted — buyer can now check out','check');
+  // create a pending order shell
+  render();
+}
+function rejectOffer(id){
+  const o=offers.find(x=>x.id===id); o.status='rejected';
+  toast('Offer declined');
+  render();
+}
+function counterOffer(id,amount){
+  const o=offers.find(x=>x.id===id);
+  if(!amount||amount<=0){toast('Enter a valid counter amount','alert');return;}
+  o.amount=Number(amount); o.status='countered'; o.time='Just now';
+  toast('Counter-offer of '+fmt(amount)+' sent','tag');
+  render();
+}
+
+function openMessageModal(sellerName,sellerId,productId,productTitle){
+  let conv = conversations.find(c=>c.productId===productId);
+  if(!conv){
+    conv = {id:Date.now(),withName:sellerName,withInitials:sellerName.split(' ').map(w=>w[0]).join(''),productId:productId,productTitle:productTitle,messages:[]};
+    conversations.unshift(conv);
+  }
+  setView('messages',conv.id);
+}
+function sendMessage(text){
+  if(!text.trim())return;
+  const conv = conversations.find(c=>c.id===state.activeConv);
+  conv.messages.push({from:'me',text:text,time:'Just now'});
+  document.getElementById('chatInputBox').value='';
+  render();
+  setTimeout(()=>{
+    conv.messages.push({from:'them',text:'Thanks for the message — I\'ll get back to you shortly!',time:'Just now'});
+    render();
+  },1100);
+}
+
+function buyNow(productId){
+  const p = idxr(productId);
+  openModal({type:'checkout',productId:productId,step:1});
+}
+function confirmCheckout(productId){
+  const p = idxr(productId);
+  const commission = +(p.price*0.05).toFixed(2);
+  const order = {id:'ORD-'+Math.floor(1000+Math.random()*9000),productId:p.id,title:p.title,buyer:CURRENT_USER.name,buyerId:'u1',seller:p.seller,sellerId:p.sellerId,amount:p.price,commission:commission,status:'escrow_held',tracking:null,created:'Just now',role:'buyer'};
+  orders.unshift(order);
+  notifications.unshift({id:Date.now(),icon:'shield',text:'Payment of '+fmt(p.price)+' secured in escrow for '+p.title,time:'Just now',read:false});
+  closeModal();
+  toast('Payment secured in escrow — seller notified','lock');
+  setView('orders');
+}
+function markShipped(orderId,tracking){
+  const o = orders.find(x=>x.id===orderId);
+  o.status='shipped'; o.tracking = tracking||('TRK'+Math.floor(Math.random()*900000000));
+  toast('Order marked as shipped');
+  render();
+}
+function confirmDelivery(orderId){
+  const o = orders.find(x=>x.id===orderId);
+  o.status='completed';
+  CURRENT_USER.walletBalance += (o.amount - o.commission);
+  notifications.unshift({id:Date.now(),icon:'wallet',text:'Funds released: '+fmt(o.amount-o.commission)+' from order '+o.id,time:'Just now',read:false});
+  toast('Delivery confirmed — funds released from escrow','check');
+  render();
+}
+function openDisputeModal(orderId){
+  openModal({type:'dispute',orderId:orderId});
+}
+function fileDispute(orderId,reason){
+  if(!reason.trim()){toast('Please describe the issue','alert');return;}
+  const o = orders.find(x=>x.id===orderId);
+  o.status='disputed';
+  disputes.unshift({orderId:orderId,product:o.title,buyer:o.buyer,seller:o.seller,amount:o.amount,reason:reason,status:'open',opened:'Just now'});
+  closeModal();
+  toast('Dispute filed — our team will review the evidence','gavel');
+  render();
+}
+function cancelOrder(orderId){
+  const o = orders.find(x=>x.id===orderId);
+  o.status='cancelled';
+  toast('Order cancelled and refund initiated');
+  render();
+}
+
+function requestPayout(){
+  if(CURRENT_USER.walletBalance<=0){toast('No available balance to withdraw','alert');return;}
+  const amt = CURRENT_USER.walletBalance;
+  payoutHistory.unshift({id:'PO-'+Math.floor(300+Math.random()*99),amount:amt,date:'Just now',status:'Processing'});
+  CURRENT_USER.walletBalance = 0;
+  closeModal();
+  toast('Payout of '+fmt(amt)+' requested','wallet');
+  render();
+}
+
+function submitReview(orderId,rating,text){
+  if(!rating){toast('Please select a star rating','alert');return;}
+  const o = orders.find(x=>x.id===orderId);
+  o.reviewed = true;
+  reviews.unshift({orderId:orderId,rating:rating,text:text,from:CURRENT_USER.name,product:o.title});
+  closeModal();
+  toast('Review submitted — thanks for your feedback','star');
+  render();
+}
+
+function markNotificationRead(id){
+  const n = notifications.find(x=>x.id===id); if(n) n.read=true; render();
+}
+function markAllRead(){ notifications.forEach(n=>n.read=true); render(); toast('All notifications marked as read'); }
+
+function publishListing(data,status){
+  const id = Date.now();
+  products.unshift({id:id,title:data.title||'Untitled listing',price:Number(data.price)||0,category:data.category||'Other',condition:data.condition||'Used - Good',sellerId:'u1',seller:CURRENT_USER.name,rating:CURRENT_USER.rating,img:photo('vaultmark-new-'+id),bg:'#EAE2D2',desc:data.desc||'',stock:Number(data.stock)||1,status:status,favorites:0,faved:false});
+  closeModal();
+  toast(status==='active'?'Listing published':'Draft saved','check');
+  setView('mylistings');
+}
+function archiveListing(id){ const p=idxr(id); p.status='archived'; toast('Listing archived'); render(); }
+function activateListing(id){ const p=idxr(id); p.status='active'; toast('Listing published'); render(); }
+function deleteListing(id){ products = products.filter(p=>p.id!==id); toast('Listing removed'); render(); }
+
+/* admin actions */
+function suspendUser(id){ const u=adminUsers.find(x=>x.id===id); u.status='suspended'; toast('User suspended'); render(); }
+function activateUser(id){ const u=adminUsers.find(x=>x.id===id); u.status='active'; toast('User re-activated'); render(); }
+function removeFlagged(id){ flaggedListings = flaggedListings.filter(f=>f.id!==id); toast('Listing removed from marketplace'); render(); }
+function dismissFlag(id){ flaggedListings = flaggedListings.filter(f=>f.id!==id); toast('Report dismissed, listing kept live'); render(); }
+function resolveDispute(orderId,decision){
+  const d = disputes.find(x=>x.orderId===orderId); d.status = decision==='release'?'resolved — released to seller':'resolved — refunded to buyer';
+  const o = orders.find(x=>x.id===orderId); if(o) o.status = decision==='release'?'completed':'refunded';
+  toast('Dispute resolved: '+(decision==='release'?'funds released to seller':'buyer refunded'));
+  render();
+}
+function updateCommission(val){ commissionRate = Number(val); toast('Platform commission set to '+val+'%'); render(); }
+function toggleCoupon(code){ const c=coupons.find(x=>x.code===code); c.active=!c.active; toast(c.active?'Coupon activated':'Coupon deactivated'); render(); }
+function addCoupon(code,type){
+  if(!code.trim()){toast('Enter a coupon code','alert');return;}
+  coupons.unshift({code:code.toUpperCase(),type:type||'Custom discount',uses:0,active:true});
+  closeModal(); toast('Coupon created'); render();
+}
+
+/* =========================================================
+   RENDER: SIDEBAR
+========================================================= */
+function navItemsFor(role){
+  const common = [
+    {v:'browse',label:'Browse',icon:'search'},
+    {v:'offers',label:'Offers',icon:'tag',badge:offers.filter(o=>o.status==='pending'&&o.sellerId==='u1').length},
+    {v:'messages',label:'Messages',icon:'chat'},
+    {v:'orders',label:'Orders',icon:'box'},
+    {v:'wallet',label:'Wallet & Payouts',icon:'wallet'},
+    {v:'notifications',label:'Notifications',icon:'bell',badge:notifications.filter(n=>!n.read).length},
+    {v:'profile',label:'Profile',icon:'user'}
+  ];
+  if(role==='seller'){
+    return [{v:'browse',label:'Browse',icon:'search'},{v:'mylistings',label:'My Listings',icon:'box'}].concat(common.slice(1));
+  }
+  if(role==='admin'){
+    return [
+      {v:'admin',arg:'users',label:'Users',icon:'user'},
+      {v:'admin',arg:'listings',label:'Listings',icon:'box'},
+      {v:'admin',arg:'orders',label:'Orders & Escrow',icon:'shield'},
+      {v:'admin',arg:'disputes',label:'Disputes',icon:'gavel',badge:disputes.filter(d=>d.status==='open').length},
+      {v:'admin',arg:'flags',label:'Reported Listings',icon:'alert',badge:flaggedListings.length},
+      {v:'admin',arg:'commissions',label:'Commissions',icon:'settings'},
+      {v:'admin',arg:'coupons',label:'Coupons',icon:'tag'}
+    ];
+  }
+  return common;
+}
+
+function renderSidebar(){
+  const items = navItemsFor(state.role);
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = `
+    <div class="brand">
+      <div class="brand-mark">${ic('shield',17)}</div>
+      <div>
+        <div class="brand-name">Vaultmark</div>
+        <div class="brand-sub">Marketplace demo</div>
+      </div>
+    </div>
+    <div class="role-switch">
+      <button class="${state.role==='buyer'?'active':''}" onclick="setRole('buyer')">Buyer</button>
+      <button class="${state.role==='seller'?'active':''}" onclick="setRole('seller')">Seller</button>
+      <button class="${state.role==='admin'?'active':''}" onclick="setRole('admin')">Admin</button>
+    </div>
+    <nav class="navlist">
+      ${items.map(it=>`
+        <button class="navlink ${ (state.view===it.v && (!it.arg || state.adminTab===it.arg)) ?'active':''}" onclick="setView('${it.v}'${it.arg?",'"+it.arg+"'":''})">
+          ${ic(it.icon,16)}<span>${it.label}</span>
+          ${it.badge?`<span class="badge">${it.badge}</span>`:''}
+        </button>
+      `).join('')}
+    </nav>
+    <div class="side-footer">
+      <div class="avatar">${CURRENT_USER.initials}</div>
+      <div>
+        <div class="name">${CURRENT_USER.name}</div>
+        <div class="role">${state.role} view</div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: TOPBAR
+========================================================= */
+function renderTopbar(){
+  const unread = notifications.filter(n=>!n.read).length;
+  const tb = document.getElementById('topbar');
+  tb.innerHTML = `
+    <button id="menuToggle" onclick="document.getElementById('sidebar').classList.toggle('open')">${ic('menu',20)}</button>
+    <div class="searchbar">
+      ${ic('search',16)}
+      <input type="text" placeholder="Search listings, categories, sellers…" value="${esc(state.search)}" oninput="state.search=this.value; renderContentOnly();">
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="wallet-chip">${ic('wallet',15)}<span>Balance</span><span class="amt">${fmt(CURRENT_USER.walletBalance)}</span></div>
+    <button class="icon-btn" onclick="setView('notifications')" title="Notifications">${ic('bell',17)}${unread?'<span class="dot"></span>':''}</button>
+  `;
+}
+
+/* =========================================================
+   RENDER: BROWSE
+========================================================= */
+function filteredProducts(){
+  let list = products.filter(p=> state.role==='admin' ? true : p.status==='active' || p.sellerId==='u1');
+  if(state.role!=='admin'){
+    // buyers/sellers browsing marketplace should mainly see active items (plus their own drafts on My Listings, handled separately)
+    list = products.filter(p=>p.status==='active');
+  }
+  if(state.category!=='All') list = list.filter(p=>p.category===state.category);
+  if(state.search.trim()) list = list.filter(p=>p.title.toLowerCase().includes(state.search.toLowerCase())||p.category.toLowerCase().includes(state.search.toLowerCase()));
+  if(state.sort==='price_low') list=[...list].sort((a,b)=>a.price-b.price);
+  if(state.sort==='price_high') list=[...list].sort((a,b)=>b.price-a.price);
+  if(state.sort==='popular') list=[...list].sort((a,b)=>b.favorites-a.favorites);
+  return list;
+}
+
+function productCard(p){
+  return `
+  <div class="card pcard">
+    <div class="pimg" onclick="setView('product',${p.id})">
+      <img src="${p.img}" alt="${esc(p.title)}" loading="lazy">
+      <button class="fav ${p.faved?'faved':''}" onclick="toggleFavorite(${p.id},event)">${ic('heart',15)}</button>
+    </div>
+    <div class="pbody">
+      <div class="cat">${p.category}</div>
+      <div class="title" onclick="setView('product',${p.id})">${esc(p.title)}</div>
+      <div class="meta">${p.condition} · ${p.seller}</div>
+      <div class="bottom">
+        <div class="price">${fmt(p.price)}</div>
+        <div style="font-size:11.5px;color:var(--slate);display:flex;align-items:center;gap:3px;">${ic('heart',12)} ${p.favorites}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function viewBrowse(){
+  const cats = ['All','Electronics','Fashion','Home & Living','Collectibles','Sports'];
+  const list = filteredProducts();
+  return `
+    <div class="page-head">
+      <div><h1>Browse the marketplace</h1><p>${list.length} listing${list.length!==1?'s':''} available right now</p></div>
+      ${state.role==='seller' ? `<button class="btn btn-gold" onclick="openListingModal()">${ic('plus',15)} Create listing</button>`:''}
+    </div>
+    <div class="filter-row">
+      ${cats.map(c=>`<button class="chip ${state.category===c?'active':''}" onclick="state.category='${c}';renderContentOnly();">${c}</button>`).join('')}
+      <div style="margin-left:auto;">
+        <select class="select-sm" onchange="state.sort=this.value;renderContentOnly();">
+          <option value="relevance" ${state.sort==='relevance'?'selected':''}>Sort: Relevance</option>
+          <option value="price_low" ${state.sort==='price_low'?'selected':''}>Price: Low to High</option>
+          <option value="price_high" ${state.sort==='price_high'?'selected':''}>Price: High to Low</option>
+          <option value="popular" ${state.sort==='popular'?'selected':''}>Most Favourited</option>
+        </select>
+      </div>
+    </div>
+    ${list.length? `<div class="grid">${list.map(productCard).join('')}</div>` :
+      `<div class="empty">${ic('search',30)}<h3>No listings match your filters</h3><p>Try a different category or clear your search.</p></div>`}
+  `;
+}
+
+/* =========================================================
+   RENDER: PRODUCT DETAIL
+========================================================= */
+function viewProductDetail(){
+  const p = idxr(state.selectedProductId);
+  if(!p) return `<div class="empty"><h3>Listing not found</h3></div>`;
+  const isMine = p.sellerId==='u1';
+  return `
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:16px;" onclick="setView('browse')">${ic('arrow',14)} Back to browse</button>
+    <div class="pd-wrap">
+      <div>
+        <div class="pd-hero"><img src="${p.img}" alt="${esc(p.title)}"></div>
+        <div class="pd-thumbs">
+          ${[0,1,2].map(i=>`<div class="${state.activePimg===i?'active':''}" onclick="state.activePimg=${i};renderContentOnly();"><img src="${photo('vaultmark-'+p.id+'-view-'+i)}" alt="${esc(p.title)} view ${i+1}"></div>`).join('')}
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item">${ic('shield',15)} Escrow protected</div>
+          <div class="trust-item">${ic('lock',15)} Secure payment</div>
+          <div class="trust-item">${ic('truck',15)} Tracked shipping</div>
+        </div>
+      </div>
+      <div>
+        <div class="cat" style="color:var(--gold-deep);font-size:11px;font-weight:700;text-transform:uppercase;">${p.category} · ${p.condition}</div>
+        <h1 style="margin:6px 0 0;font-size:24px;">${esc(p.title)}</h1>
+        <div class="pd-price-row"><div class="price">${fmt(p.price)}</div><span class="pill pill-active">${p.stock} in stock</span></div>
+        <div class="seller-row">
+          <div class="avatar">${p.seller.split(' ').map(w=>w[0]).join('')}</div>
+          <div class="info">
+            <div class="sname">${p.seller}</div>
+            <div class="srating">${ic('star',13)} ${p.rating} seller rating</div>
+          </div>
+          ${!isMine?`<button class="btn btn-outline btn-sm" onclick="openMessageModal('${p.seller}','${p.sellerId}',${p.id},'${p.title.replace(/'/g,"\\'")}')">${ic('chat',14)} Message</button>`:''}
+        </div>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--ink);">${esc(p.desc)}</p>
+        ${!isMine?`
+        <div class="pd-actions">
+          <button class="btn btn-gold" onclick="buyNow(${p.id})">${ic('shield',15)} Buy now — escrow protected</button>
+          <button class="btn btn-outline" onclick="openOfferModal(${p.id})">${ic('tag',15)} Make an offer</button>
+          <button class="btn btn-ghost" onclick="toggleFavorite(${p.id})">${ic('heart',15)} ${p.faved?'Favourited':'Favourite'}</button>
+        </div>`:`
+        <div class="pd-actions">
+          <span class="pill ${p.status==='active'?'pill-active':'pill-draft'}">${p.status}</span>
+          <button class="btn btn-outline btn-sm" onclick="setView('mylistings')">${ic('edit',14)} Manage this listing</button>
+        </div>`}
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: OFFERS
+========================================================= */
+function viewOffers(){
+  const mine = offers.filter(o=>o.buyerId==='u1' || o.sellerId==='u1');
+  const received = mine.filter(o=>o.sellerId==='u1');
+  const sent = mine.filter(o=>o.buyerId==='u1');
+  function row(o,mode){
+    const p = idxr(o.productId);
+    const statusPill = {pending:'pill-pending',accepted:'pill-active',rejected:'pill-danger',countered:'pill-info'}[o.status]||'pill-draft';
+    return `
+    <div class="card" style="padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <div style="width:44px;height:44px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--paper-dim);">${p?`<img src="${p.img}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;display:block;">`:''}</div>
+        <div style="flex:1;min-width:180px;">
+          <div style="font-weight:600;font-size:13.5px;">${o.productTitle||(p?p.title:'Listing removed')}</div>
+          <div style="font-size:12px;color:var(--slate);">${mode==='received'?'From '+o.buyer:'To '+o.seller} · List price ${fmt(o.listPrice)} · ${o.time}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="mono" style="font-weight:600;font-size:16px;">${fmt(o.amount)}</div>
+          <span class="pill ${statusPill}">${o.status}</span>
+        </div>
+      </div>
+      ${mode==='received' && o.status==='pending' ? `
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-teal btn-sm" onclick="acceptOffer(${o.id})">${ic('check',13)} Accept</button>
+          <button class="btn btn-coral btn-sm" onclick="rejectOffer(${o.id})">${ic('x',13)} Reject</button>
+          <input type="number" placeholder="Counter $" id="counter-${o.id}" style="width:100px;padding:6px 8px;font-size:12.5px;">
+          <button class="btn btn-outline btn-sm" onclick="counterOffer(${o.id}, document.getElementById('counter-${o.id}').value)">Send counter</button>
+        </div>`:''}
+      ${mode==='sent' && o.status==='accepted' ? `
+        <div style="margin-top:12px;"><button class="btn btn-gold btn-sm" onclick="setView('product',${o.productId})">${ic('shield',13)} Proceed to escrow checkout</button></div>`:''}
+      ${mode==='sent' && o.status==='countered' ? `
+        <div style="margin-top:12px;font-size:12.5px;color:var(--slate);">${ic('info',13)} Seller countered — check messages to continue negotiating.</div>`:''}
+    </div>`;
+  }
+  return `
+    <div class="page-head"><div><h1>Offers & negotiation</h1><p>Track offers you've sent and manage offers you've received</p></div></div>
+    <div class="tabs">
+      <button class="tab ${state._offersTab!=='sent'?'active':''}" onclick="state._offersTab='received';renderContentOnly();">Received (${received.length})</button>
+      <button class="tab ${state._offersTab==='sent'?'active':''}" onclick="state._offersTab='sent';renderContentOnly();">Sent (${sent.length})</button>
+    </div>
+    ${state._offersTab==='sent' ?
+      (sent.length? sent.map(o=>row(o,'sent')).join('') : `<div class="empty">${ic('tag',28)}<h3>No offers sent yet</h3><p>Browse listings and make an offer to a seller.</p></div>`)
+      :
+      (received.length? received.map(o=>row(o,'received')).join('') : `<div class="empty">${ic('tag',28)}<h3>No offers received yet</h3><p>Offers on your listings will appear here.</p></div>`)
+    }
+  `;
+}
+
+/* =========================================================
+   RENDER: MESSAGES
+========================================================= */
+function viewMessages(){
+  const conv = conversations.find(c=>c.id===state.activeConv) || conversations[0];
+  if(conv && !state.activeConv) state.activeConv = conv.id;
+  return `
+    <div class="page-head"><div><h1>Messages</h1><p>Secure buyer–seller conversations with full history</p></div></div>
+    <div class="msg-wrap">
+      <div class="conv-list">
+        ${conversations.map(c=>`
+          <div class="conv-item ${conv&&c.id===conv.id?'active':''}" onclick="setView('messages',${c.id})">
+            <div class="avatar" style="width:34px;height:34px;font-size:12px;">${c.withInitials}</div>
+            <div style="min-width:0;">
+              <div class="cname">${c.withName}</div>
+              <div class="cprod">${esc(c.productTitle)}</div>
+              <div class="clast">${c.messages.length?esc(c.messages[c.messages.length-1].text):'No messages yet'}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="chat-col">
+        ${conv? `
+        <div class="chat-head">
+          <div class="avatar" style="width:32px;height:32px;font-size:12px;">${conv.withInitials}</div>
+          <div>
+            <div style="font-weight:600;font-size:13.5px;">${conv.withName}</div>
+            <div style="font-size:11.5px;color:var(--slate);">Re: ${esc(conv.productTitle)}</div>
+          </div>
+        </div>
+        <div class="chat-body" id="chatBody">
+          ${conv.messages.length? conv.messages.map(m=>`<div class="bubble ${m.from==='me'?'me':'them'}">${esc(m.text)}<span class="t">${m.time}</span></div>`).join('') : `<div class="empty" style="padding:30px;">Say hello to start the conversation.</div>`}
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chatInputBox" placeholder="Write a message…" onkeydown="if(event.key==='Enter'){sendMessage(this.value);}">
+          <button class="btn btn-primary btn-sm" onclick="sendMessage(document.getElementById('chatInputBox').value)">${ic('arrow',14)} Send</button>
+        </div>` : `<div class="empty">No conversation selected</div>`}
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: ORDERS
+========================================================= */
+function statusMeta(status){
+  return {
+    escrow_held:{label:'Escrow held',pill:'pill-pending',icon:'lock'},
+    shipped:{label:'Shipped',pill:'pill-info',icon:'truck'},
+    completed:{label:'Completed',pill:'pill-active',icon:'check'},
+    disputed:{label:'Disputed',pill:'pill-danger',icon:'gavel'},
+    cancelled:{label:'Cancelled',pill:'pill-draft',icon:'x'},
+    refunded:{label:'Refunded',pill:'pill-draft',icon:'wallet'}
+  }[status] || {label:status,pill:'pill-draft',icon:'box'};
+}
+function vaultWidget(order){
+  const stage = {escrow_held:1,shipped:1,completed:2,disputed:1,cancelled:0,refunded:0}[order.status] ?? 1;
+  const node = (n,label,amt,active,done)=>`
+    <div class="vault-node ${done?'done':active?'current':''}">
+      <div class="circ">${ic(done?'check':n,18)}</div>
+      <div class="lbl">${label}</div>
+      <div class="amt">${amt}</div>
+    </div>`;
+  return `
+  <div class="vault">
+    <div class="vault-title">${ic('shield',15)} Escrow status</div>
+    <div class="vault-sub">Funds move safely from buyer to seller, held by Vaultmark until delivery is confirmed</div>
+    <div class="vault-track">
+      ${node('user','Buyer',fmt(order.amount),stage===0,stage>0)}
+      <div class="vault-line ${stage>=1?'filled':''}"></div>
+      ${node('lock','Escrow vault',fmt(order.amount),stage===1,stage>1)}
+      <div class="vault-line ${stage>=2?'filled':''}"></div>
+      ${node('user','Seller',fmt(+(order.amount-order.commission).toFixed(2)),stage===2,stage>2)}
+    </div>
+  </div>`;
+}
+function orderCard(o){
+  const meta = statusMeta(o.status);
+  const asSeller = o.sellerId==='u1';
+  const asBuyer = o.buyerId==='u1';
+  return `
+  <div class="card" style="padding:18px 20px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:12px;color:var(--slate);" class="mono">${o.id} · ${o.created}</div>
+        <div style="font-weight:600;font-size:14.5px;margin-top:2px;">${esc(o.title)}</div>
+        <div style="font-size:12px;color:var(--slate);margin-top:2px;">${asBuyer?'Sold by '+o.seller:'Sold to '+o.buyer}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="mono" style="font-weight:600;font-size:16px;">${fmt(o.amount)}</div>
+        <span class="pill ${meta.pill}">${ic(meta.icon,11)} ${meta.label}</span>
+      </div>
+    </div>
+    ${['escrow_held','shipped','completed'].includes(o.status)? vaultWidget(o):''}
+    ${o.tracking? `<div style="font-size:12.5px;color:var(--slate);margin-top:10px;">${ic('truck',13)} Tracking: <span class="mono">${o.tracking}</span></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      ${asSeller && o.status==='escrow_held' ? `<button class="btn btn-primary btn-sm" onclick="markShipped('${o.id}')">${ic('truck',13)} Mark as shipped</button>`:''}
+      ${asBuyer && o.status==='shipped' ? `<button class="btn btn-teal btn-sm" onclick="confirmDelivery('${o.id}')">${ic('check',13)} Confirm delivery — release funds</button>`:''}
+      ${asBuyer && ['shipped','escrow_held'].includes(o.status) ? `<button class="btn btn-outline btn-sm" onclick="openDisputeModal('${o.id}')">${ic('gavel',13)} Open dispute</button>`:''}
+      ${asBuyer && o.status==='escrow_held' ? `<button class="btn btn-ghost btn-sm" onclick="cancelOrder('${o.id}')">${ic('x',13)} Cancel order</button>`:''}
+      ${asBuyer && o.status==='completed' && !o.reviewed ? `<button class="btn btn-gold btn-sm" onclick="openReviewModal('${o.id}')">${ic('star',13)} Leave a review</button>`:''}
+      ${o.reviewed ? `<span class="pill pill-active">${ic('star',11)} Reviewed</span>`:''}
+    </div>
+  </div>`;
+}
+function viewOrders(){
+  const mine = orders.filter(o=>o.buyerId==='u1'||o.sellerId==='u1');
+  return `
+    <div class="page-head"><div><h1>Orders & shipping</h1><p>Full order lifecycle, from escrow hold to delivery confirmation</p></div></div>
+    ${mine.length? mine.map(orderCard).join('') : `<div class="empty">${ic('box',28)}<h3>No orders yet</h3></div>`}
+  `;
+}
+
+/* =========================================================
+   RENDER: WALLET
+========================================================= */
+function viewWallet(){
+  return `
+    <div class="page-head"><div><h1>Wallet & payouts</h1><p>Balances, pending escrow funds and withdrawal history</p></div></div>
+    <div class="stat-grid">
+      <div class="card stat-card"><div class="lbl">Available balance</div><div class="val">${fmt(CURRENT_USER.walletBalance)}</div><div class="sub">Ready to withdraw</div></div>
+      <div class="card stat-card"><div class="lbl">Pending in escrow</div><div class="val">${fmt(CURRENT_USER.pending)}</div><div class="sub">Releases on delivery confirmation</div></div>
+      <div class="card stat-card"><div class="lbl">Lifetime earnings</div><div class="val">${fmt(1842.30)}</div><div class="sub">Since Mar 2025</div></div>
+    </div>
+    <div class="card" style="padding:18px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="section-title">Request a payout</div>
+        <div style="font-size:12.5px;color:var(--slate);">Transfers to your linked bank account in 2–3 business days</div>
+      </div>
+      <button class="btn btn-gold" onclick="openModal({type:'payout'})">${ic('wallet',15)} Withdraw ${fmt(CURRENT_USER.walletBalance)}</button>
+    </div>
+    <div class="card" style="padding:18px 20px;">
+      <div class="section-title" style="margin-bottom:12px;">Payout history</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Payout ID</th><th>Amount</th><th>Date</th><th>Status</th></tr>
+        ${payoutHistory.map(p=>`<tr><td class="mono">${p.id}</td><td class="mono">${fmt(p.amount)}</td><td>${p.date}</td><td><span class="pill ${p.status==='Paid'?'pill-active':'pill-pending'}">${p.status}</span></td></tr>`).join('')}
+      </table></div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: NOTIFICATIONS
+========================================================= */
+function viewNotifications(){
+  return `
+    <div class="page-head">
+      <div><h1>Notifications</h1><p>Account activity, offers, orders, messages and disputes</p></div>
+      <button class="btn btn-outline btn-sm" onclick="markAllRead()">${ic('check',14)} Mark all as read</button>
+    </div>
+    <div class="card" style="padding:6px 20px;">
+      ${notifications.map(n=>`
+        <div class="list-row" style="cursor:pointer;" onclick="markNotificationRead(${n.id})">
+          <div style="width:36px;height:36px;border-radius:50%;background:${n.read?'var(--paper-dim)':'var(--gold-soft)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${n.read?'var(--slate)':'var(--gold-deep)'};">${ic(n.icon,16)}</div>
+          <div class="grow">
+            <div class="ttl" style="font-weight:${n.read?'500':'700'};">${esc(n.text)}</div>
+            <div class="sub">${n.time}</div>
+          </div>
+          ${!n.read?'<span style="width:8px;height:8px;border-radius:50%;background:var(--coral);flex-shrink:0;"></span>':''}
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: PROFILE
+========================================================= */
+function viewProfile(){
+  const myReviews = reviews;
+  return `
+    <div class="page-head"><div><h1>Profile</h1><p>Manage your public profile, verification and account details</p></div></div>
+    <div class="pd-wrap">
+      <div class="card" style="padding:22px;">
+        <div style="display:flex;gap:14px;align-items:center;">
+          <div class="avatar" style="width:60px;height:60px;font-size:20px;">${CURRENT_USER.initials}</div>
+          <div>
+            <div style="font-weight:600;font-size:17px;">${CURRENT_USER.name}</div>
+            <div style="font-size:12.5px;color:var(--slate);display:flex;align-items:center;gap:5px;margin-top:2px;">${ic('star',13)} ${CURRENT_USER.rating} rating · 47 transactions</div>
+            <span class="pill pill-active" style="margin-top:6px;">${ic('shield',11)} Identity verified</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="field"><label>Full name</label><input type="text" value="${CURRENT_USER.name}"></div>
+        <div class="form-row2">
+          <div class="field"><label>Email address</label><input type="email" value="alex.rivera@mail.com"></div>
+          <div class="field"><label>Phone number</label><input type="text" value="+92 300 1234567"></div>
+        </div>
+        <div class="field"><label>Shipping address</label><textarea>House 12, Street 4, Bahria Town, Rawalpindi, Punjab</textarea></div>
+        <button class="btn btn-primary" onclick="toast('Profile updated')">Save changes</button>
+      </div>
+      <div>
+        <div class="card" style="padding:18px 20px;margin-bottom:16px;">
+          <div class="section-title">Trust indicators</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+            <div class="trust-item">${ic('shield',15)} Government ID verified</div>
+            <div class="trust-item">${ic('check',15)} Email confirmed</div>
+            <div class="trust-item">${ic('check',15)} Phone confirmed</div>
+            <div class="trust-item">${ic('star',15)} Top-rated seller (last 90 days)</div>
+          </div>
+        </div>
+        <div class="card" style="padding:18px 20px;">
+          <div class="section-title">Reviews received</div>
+          ${myReviews.length? myReviews.map(r=>`
+            <div style="padding:10px 0;border-bottom:1px solid var(--line-soft);">
+              <div class="star-row" style="margin-bottom:4px;">${[1,2,3,4,5].map(i=>ic('star',13)).slice(0,r.rating).join('')}</div>
+              <div style="font-size:12.5px;">${esc(r.text||'Great transaction!')}</div>
+              <div style="font-size:11px;color:var(--slate);margin-top:3px;">${esc(r.product)}</div>
+            </div>`).join('') : `<div style="font-size:12.5px;color:var(--slate);">No reviews yet this session — complete an order and leave a review to see it here.</div>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: MY LISTINGS (seller)
+========================================================= */
+function viewMyListings(){
+  const mine = products.filter(p=>p.sellerId==='u1');
+  return `
+    <div class="page-head">
+      <div><h1>My listings</h1><p>Create, edit, publish, archive or remove your products</p></div>
+      <button class="btn btn-gold" onclick="openListingModal()">${ic('plus',15)} Create listing</button>
+    </div>
+    ${mine.length? `<div class="tbl-wrap card" style="padding:6px 10px;"><table>
+      <tr><th>Listing</th><th>Price</th><th>Status</th><th>Favourites</th><th></th></tr>
+      ${mine.map(p=>`
+        <tr>
+          <td style="display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;border-radius:7px;overflow:hidden;background:var(--paper-dim);"><img src="${p.img}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>${esc(p.title)}</td>
+          <td class="mono">${fmt(p.price)}</td>
+          <td><span class="pill ${p.status==='active'?'pill-active':p.status==='draft'?'pill-draft':'pill-danger'}">${p.status}</span></td>
+          <td>${p.favorites}</td>
+          <td style="text-align:right;white-space:nowrap;">
+            ${p.status==='draft'?`<button class="btn btn-ghost btn-sm" onclick="activateListing(${p.id})" title="Publish">${ic('check',14)}</button>`:''}
+            ${p.status==='active'?`<button class="btn btn-ghost btn-sm" onclick="archiveListing(${p.id})" title="Archive">${ic('box',14)}</button>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="setView('product',${p.id})" title="View">${ic('search',14)}</button>
+            <button class="btn btn-ghost btn-sm" onclick="deleteListing(${p.id})" title="Delete">${ic('trash',14)}</button>
+          </td>
+        </tr>`).join('')}
+    </table></div>` : `<div class="empty">${ic('box',28)}<h3>You haven't listed anything yet</h3><p>Create your first listing to start selling.</p></div>`}
+  `;
+}
+
+/* =========================================================
+   RENDER: ADMIN PORTAL
+========================================================= */
+function adminTabs(){
+  const tabs = [['users','Users'],['listings','Listings'],['orders','Orders & Escrow'],['disputes','Disputes'],['flags','Reported Listings'],['commissions','Commissions'],['coupons','Coupons']];
+  return `<div class="tabs">${tabs.map(t=>`<button class="tab ${state.adminTab===t[0]?'active':''}" onclick="setView('admin','${t[0]}')">${t[1]}</button>`).join('')}</div>`;
+}
+function viewAdmin(){
+  let body='';
+  if(state.adminTab==='users'){
+    body = `<div class="tbl-wrap card" style="padding:6px 10px;"><table>
+      <tr><th>User</th><th>Email</th><th>Role</th><th>Verified</th><th>Status</th><th></th></tr>
+      ${adminUsers.map(u=>`
+        <tr>
+          <td style="font-weight:600;">${u.name}</td><td>${u.email}</td><td>${u.role}</td>
+          <td>${u.verified?`<span class="pill pill-active">${ic('check',10)} Verified</span>`:'<span class="pill pill-draft">Unverified</span>'}</td>
+          <td><span class="pill ${u.status==='active'?'pill-active':'pill-danger'}">${u.status}</span></td>
+          <td style="text-align:right;">${u.status==='active'?`<button class="btn btn-coral btn-sm" onclick="suspendUser('${u.id}')">Suspend</button>`:`<button class="btn btn-teal btn-sm" onclick="activateUser('${u.id}')">Reactivate</button>`}</td>
+        </tr>`).join('')}
+    </table></div>`;
+  } else if(state.adminTab==='listings'){
+    body = `<div class="tbl-wrap card" style="padding:6px 10px;"><table>
+      <tr><th>Listing</th><th>Seller</th><th>Price</th><th>Status</th><th></th></tr>
+      ${products.map(p=>`
+        <tr>
+          <td style="display:flex;align-items:center;gap:10px;"><div style="width:30px;height:30px;border-radius:6px;overflow:hidden;background:var(--paper-dim);"><img src="${p.img}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>${esc(p.title)}</td>
+          <td>${p.seller}</td><td class="mono">${fmt(p.price)}</td>
+          <td><span class="pill ${p.status==='active'?'pill-active':p.status==='draft'?'pill-draft':'pill-danger'}">${p.status}</span></td>
+          <td style="text-align:right;">
+            ${p.status!=='archived'?`<button class="btn btn-ghost btn-sm" onclick="archiveListing(${p.id})">Remove</button>`:`<button class="btn btn-ghost btn-sm" onclick="activateListing(${p.id})">Restore</button>`}
+          </td>
+        </tr>`).join('')}
+    </table></div>`;
+  } else if(state.adminTab==='orders'){
+    body = `<div class="tbl-wrap card" style="padding:6px 10px;"><table>
+      <tr><th>Order</th><th>Buyer</th><th>Seller</th><th>Amount</th><th>Commission</th><th>Status</th></tr>
+      ${orders.map(o=>{const m=statusMeta(o.status);return `<tr><td class="mono">${o.id}</td><td>${o.buyer}</td><td>${o.seller}</td><td class="mono">${fmt(o.amount)}</td><td class="mono">${fmt(o.commission)}</td><td><span class="pill ${m.pill}">${m.label}</span></td></tr>`;}).join('')}
+    </table></div>`;
+  } else if(state.adminTab==='disputes'){
+    body = disputes.length ? disputes.map(d=>`
+      <div class="card" style="padding:18px 20px;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div class="mono" style="font-size:12px;color:var(--slate);">${d.orderId} · opened ${d.opened}</div>
+            <div style="font-weight:600;font-size:14.5px;">${esc(d.product)}</div>
+            <div style="font-size:12.5px;color:var(--slate);">Buyer: ${d.buyer} · Seller: ${d.seller}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="mono" style="font-weight:600;">${fmt(d.amount)}</div>
+            <span class="pill ${d.status==='open'?'pill-danger':'pill-active'}">${d.status}</span>
+          </div>
+        </div>
+        <div style="font-size:13px;margin-top:10px;padding:10px 12px;background:var(--paper-dim);border-radius:8px;">${ic('alert',13)} ${esc(d.reason)}</div>
+        ${d.status==='open'?`
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn btn-teal btn-sm" onclick="resolveDispute('${d.orderId}','release')">${ic('check',13)} Release funds to seller</button>
+          <button class="btn btn-coral btn-sm" onclick="resolveDispute('${d.orderId}','refund')">${ic('wallet',13)} Refund buyer</button>
+        </div>`:''}
+      </div>`).join('') : `<div class="empty">${ic('gavel',28)}<h3>No open disputes</h3><p>All escrow transactions are running smoothly.</p></div>`;
+  } else if(state.adminTab==='flags'){
+    body = flaggedListings.length? flaggedListings.map(f=>`
+      <div class="card" style="padding:16px 20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div><div style="font-weight:600;font-size:13.5px;">${esc(f.title)}</div><div style="font-size:12px;color:var(--slate);">${ic('alert',12)} ${esc(f.reason)} · reported ${f.reportedBy}x</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="dismissFlag(${f.id})">Dismiss</button>
+          <button class="btn btn-coral btn-sm" onclick="removeFlagged(${f.id})">Remove listing</button>
+        </div>
+      </div>`).join('') : `<div class="empty">${ic('shield',28)}<h3>No reported listings</h3></div>`;
+  } else if(state.adminTab==='commissions'){
+    body = `<div class="card" style="padding:20px;max-width:420px;">
+      <div class="section-title">Platform commission</div>
+      <div style="font-size:12.5px;color:var(--slate);margin-bottom:14px;">Percentage deducted from each completed transaction before releasing funds to the seller.</div>
+      <div class="field"><label>Commission rate</label><input type="number" id="commInput" value="${commissionRate}" min="0" max="30"></div>
+      <button class="btn btn-primary" onclick="updateCommission(document.getElementById('commInput').value)">Update rate</button>
+    </div>`;
+  } else if(state.adminTab==='coupons'){
+    body = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-gold btn-sm" onclick="openModal({type:'coupon'})">${ic('plus',13)} New coupon</button></div>
+      <div class="tbl-wrap card" style="padding:6px 10px;"><table>
+        <tr><th>Code</th><th>Type</th><th>Uses</th><th>Status</th><th></th></tr>
+        ${coupons.map(c=>`<tr><td class="mono">${c.code}</td><td>${c.type}</td><td>${c.uses}</td><td><span class="pill ${c.active?'pill-active':'pill-draft'}">${c.active?'Active':'Disabled'}</span></td><td style="text-align:right;"><button class="btn btn-ghost btn-sm" onclick="toggleCoupon('${c.code}')">${c.active?'Disable':'Enable'}</button></td></tr>`).join('')}
+      </table></div>`;
+  }
+  return `
+    <div class="page-head"><div><h1>Admin portal</h1><p>Centralized administration for users, listings, escrow, disputes and platform settings</p></div></div>
+    <div class="stat-grid">
+      <div class="card stat-card"><div class="lbl">Active listings</div><div class="val">${products.filter(p=>p.status==='active').length}</div></div>
+      <div class="card stat-card"><div class="lbl">Escrow in holding</div><div class="val">${fmt(orders.filter(o=>o.status==='escrow_held').reduce((s,o)=>s+o.amount,0))}</div></div>
+      <div class="card stat-card"><div class="lbl">Open disputes</div><div class="val">${disputes.filter(d=>d.status==='open').length}</div></div>
+      <div class="card stat-card"><div class="lbl">Commission earned</div><div class="val">${fmt(orders.reduce((s,o)=>s+o.commission,0))}</div></div>
+    </div>
+    ${adminTabs()}
+    ${body}
+  `;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+function openOfferModal(productId){ openModal({type:'offer',productId:productId}); }
+function openListingModal(){ openModal({type:'listing'}); }
+function openReviewModal(orderId){ openModal({type:'review',orderId:orderId,rating:0}); }
+
+function renderModal(){
+  const root = document.getElementById('modal-root');
+  const m = state.modal;
+  if(!m){root.innerHTML='';return;}
+  let inner='';
+  if(m.type==='offer'){
+    const p = idxr(m.productId);
+    inner = `
+      <div class="modal-head"><h3>Make an offer</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;padding:10px;background:var(--paper-dim);border-radius:8px;">
+        <div style="width:40px;height:40px;border-radius:8px;overflow:hidden;background:var(--paper-dim);"><img src="${p.img}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div><div style="font-weight:600;font-size:13.5px;">${esc(p.title)}</div><div style="font-size:12px;color:var(--slate);">Listed at ${fmt(p.price)}</div></div>
+      </div>
+      <div class="field"><label>Your offer amount (USD)</label><input type="number" id="offerAmt" placeholder="e.g. ${Math.round(p.price*0.85)}"></div>
+      <div class="field"><label>Message to seller (optional)</label><textarea id="offerMsg" placeholder="Add context for your offer…"></textarea></div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitOffer(${p.id}, document.getElementById('offerAmt').value)">Send offer</button>
+    `;
+  } else if(m.type==='checkout'){
+    const p = idxr(m.productId);
+    const commission = +(p.price*0.05).toFixed(2);
+    inner = `
+      <div class="modal-head"><h3>Checkout — escrow protected</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;">
+        <div style="width:44px;height:44px;border-radius:8px;overflow:hidden;background:var(--paper-dim);"><img src="${p.img}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div><div style="font-weight:600;font-size:13.5px;">${esc(p.title)}</div><div style="font-size:12px;color:var(--slate);">Sold by ${p.seller}</div></div>
+      </div>
+      <div class="field"><label>Shipping address</label><textarea>House 12, Street 4, Bahria Town, Rawalpindi, Punjab</textarea></div>
+      <div class="field"><label>Payment method</label><select><option>Visa •••• 4471</option><option>Mastercard •••• 8823</option></select></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>Item price</span><span class="mono">${fmt(p.price)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:var(--slate);"><span>Platform commission (${commissionRate}%)</span><span class="mono">${fmt(commission)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:8px;"><span>Total charged</span><span class="mono">${fmt(p.price)}</span></div>
+      <div style="font-size:11.5px;color:var(--slate);margin:10px 0 16px;">${ic('shield',12)} Your payment is held securely in escrow and only released to the seller once you confirm delivery.</div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="confirmCheckout(${p.id})">${ic('lock',15)} Pay ${fmt(p.price)} into escrow</button>
+    `;
+  } else if(m.type==='dispute'){
+    inner = `
+      <div class="modal-head"><h3>Open a dispute</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div class="field"><label>What went wrong?</label><textarea id="disputeReason" placeholder="Describe the issue in detail — our team will review the evidence from both parties."></textarea></div>
+      <div class="field"><label>Attach evidence (optional)</label><div class="upload-box">${ic('upload',20)}<div>Drop photos or drag files here</div></div></div>
+      <button class="btn btn-coral" style="width:100%;justify-content:center;" onclick="fileDispute('${m.orderId}', document.getElementById('disputeReason').value)">${ic('gavel',15)} Submit dispute</button>
+    `;
+  } else if(m.type==='payout'){
+    inner = `
+      <div class="modal-head"><h3>Withdraw funds</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div class="field"><label>Amount</label><input type="text" value="${fmt(CURRENT_USER.walletBalance)}" disabled></div>
+      <div class="field"><label>Payout to</label><select><option>Bank account •••• 2291</option></select></div>
+      <div style="font-size:11.5px;color:var(--slate);margin-bottom:16px;">${ic('info',12)} Payouts typically arrive within 2–3 business days.</div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="requestPayout()">Confirm withdrawal</button>
+    `;
+  } else if(m.type==='review'){
+    inner = `
+      <div class="modal-head"><h3>Leave a review</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div class="field"><label>Rating</label>
+        <div class="star-row" id="starRow">
+          ${[1,2,3,4,5].map(i=>`<span onclick="state.modal.rating=${i};renderModal();" style="color:${i<=(state.modal.rating||0)?'var(--gold)':'var(--line)'};">${ic('star',24)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="field"><label>Your review</label><textarea id="reviewText" placeholder="How was your experience with this transaction?"></textarea></div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitReview('${m.orderId}', state.modal.rating, document.getElementById('reviewText').value)">Submit review</button>
+    `;
+  } else if(m.type==='listing'){
+    inner = `
+      <div class="modal-head"><h3>Create a listing</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div class="field"><label>Title</label><input type="text" id="lTitle" placeholder="e.g. Vintage record player"></div>
+      <div class="form-row2">
+        <div class="field"><label>Price (USD)</label><input type="number" id="lPrice" placeholder="0.00"></div>
+        <div class="field"><label>Condition</label><select id="lCond"><option>New</option><option selected>Used - Excellent</option><option>Used - Good</option><option>Used - Fair</option></select></div>
+      </div>
+      <div class="form-row2">
+        <div class="field"><label>Category</label><select id="lCat"><option>Electronics</option><option>Fashion</option><option>Home & Living</option><option>Collectibles</option><option>Sports</option></select></div>
+        <div class="field"><label>Stock</label><input type="number" id="lStock" value="1"></div>
+      </div>
+      <div class="field"><label>Description</label><textarea id="lDesc" placeholder="Describe the item's condition, specifications and history…"></textarea></div>
+      <div class="field"><label>Photos</label><div class="upload-box">${ic('image',20)}<div>Drag images here or click to upload</div></div></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline" style="flex:1;justify-content:center;" onclick="publishListing(collectListingForm(),'draft')">Save as draft</button>
+        <button class="btn btn-gold" style="flex:1;justify-content:center;" onclick="publishListing(collectListingForm(),'active')">Publish listing</button>
+      </div>
+    `;
+  } else if(m.type==='coupon'){
+    inner = `
+      <div class="modal-head"><h3>New coupon</h3><button class="modal-close" onclick="closeModal()">${ic('x',18)}</button></div>
+      <div class="field"><label>Coupon code</label><input type="text" id="cCode" placeholder="e.g. SUMMER20"></div>
+      <div class="field"><label>Discount type</label><input type="text" id="cType" placeholder="e.g. 20% off first order"></div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="addCoupon(document.getElementById('cCode').value, document.getElementById('cType').value)">Create coupon</button>
+    `;
+  }
+  root.innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal();"><div class="modal">${inner}</div></div>`;
+}
+function collectListingForm(){
+  return {
+    title: document.getElementById('lTitle').value,
+    price: document.getElementById('lPrice').value,
+    condition: document.getElementById('lCond').value,
+    category: document.getElementById('lCat').value,
+    stock: document.getElementById('lStock').value,
+    desc: document.getElementById('lDesc').value
+  };
+}
+
+/* =========================================================
+   MAIN RENDER
+========================================================= */
+function renderContentOnly(){
+  const c = document.getElementById('content');
+  const views = {
+    browse: viewBrowse, product: viewProductDetail, offers: viewOffers, messages: viewMessages,
+    orders: viewOrders, wallet: viewWallet, notifications: viewNotifications, profile: viewProfile,
+    mylistings: viewMyListings, admin: viewAdmin
+  };
+  c.innerHTML = (views[state.view]||viewBrowse)();
+  const cb = document.getElementById('chatBody'); if(cb) cb.scrollTop = cb.scrollHeight;
+  const si = document.querySelector('.searchbar input'); if(si) si.focus({preventScroll:true});
+}
+function render(){
+  renderSidebar();
+  renderTopbar();
+  renderContentOnly();
+  renderModal();
+}
+state._offersTab='received';
+render();
+</script>
+</body>
+</html>
